@@ -7,12 +7,12 @@ Hero.css .hero-container {
 }
 
 .hero-container a {
-    color: #007bff;
+    color: black;
     text-decoration: none;
 }
 
 .hero-container a:hover {
-    text-decoration: underline;
+    text-decoration:none;
 }
 
 .hero-container button {
@@ -64,7 +64,7 @@ Hero.css .hero-container {
     background-size: contain;
     background-repeat: no-repeat;
     transform: translateX(-50%);
-    opacity: 1;
+    opacity: 0.7;
     transition: top 0.6s ease, opacity 0.6s ease;
     /* Animate coming down */
 }
@@ -94,18 +94,24 @@ Hero.css .hero-container {
 }
 
 .hero-container .donater-grid p a {
-    color: #007bff;
+    color:#007bff;
+    text-decoration:none;
 }
 
 .hero-container .donater-grid p a:hover {
-    text-decoration: underline;
+    text-decoration:underline;
 }
 
 .motivational-wrapper {
     margin: 20px;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
 }
 
 .dropdown-card {
+    width: 60%;
     margin-bottom: 15px;
     border: 1px solid #ccc;
     border-radius: 5px;

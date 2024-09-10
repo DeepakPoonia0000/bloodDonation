@@ -50,3 +50,22 @@
     font-weight: bold;
   }
   
+  .user-Requests{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 15px;
+  }
+
+  .user-Requests .requests{
+    border: 0.3px solid black;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    overflow: hidden;
+  }
+  
+  .links-decorations{
+    text-decoration: none;
+    color:black;
+  }

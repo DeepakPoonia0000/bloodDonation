@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import './styles/LoginSignup.css'
 
 const LoginSignup = ({setToken}) => {
-    const [email, setEmail] = useState('');
+    const [phoneNumber, setphoneNumber] = useState('');
     const [password, setPassword] = useState('');
     const [bloodGroup, setBloodGroup] = useState('');
     // const [location, setLocation] = useState({
@@ -20,7 +20,7 @@ const LoginSignup = ({setToken}) => {
     const handleLogin = async () => {
         
         try {
-            const response = await axios.post('http://localhost:7000/loginUser', { email, password });
+            const response = await axios.post('http://localhost:7000/loginUser', { phoneNumber, password });
             localStorage.setItem('token', response.data.token);
             setToken(response.data.token);
             console.log(response);
@@ -31,9 +31,8 @@ const LoginSignup = ({setToken}) => {
     };
 
     const handleSignup = async () => {
-        // const userData = { email, password , bloodGroup };
         try {
-            const response = await axios.post('http://localhost:7000/addUser', { email, password , bloodGroup });
+            const response = await axios.post('http://localhost:7000/addUser', { phoneNumber, password , bloodGroup });
             console.log(response.data.newUser);
 
         } catch (error) {
@@ -46,12 +45,8 @@ const LoginSignup = ({setToken}) => {
         <div className='main-container'>
             <div className="auth-container">
                 <div className="form-container">
-                    <input
-                        type="email"
-                        placeholder="Email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
+
+                    <input type="number" name="phone" id="number" placeholder='Phone Number' onChange={(e) => setphoneNumber(e.target.value)}/>
                     <input
                         type="password"
                         placeholder="Password"
