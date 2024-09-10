@@ -8,14 +8,19 @@ import { useState, useEffect } from 'react';
 import BloodRequirement from './components/BloodRequirement';
 import DonationDetails from './components/DonationDetails';
 import DonorResponse from './components/DonorResponse';
+import AdminPanel from './components/AdminPanel';
+import AdminLogSign from './components/AdminLogSign';
 
 function App() {
 
   const [token, setToken] = useState('');
+  const [adminToken , setAdminToken] = useState('');
 
   const checkAuth = () => {
     const storedToken = localStorage.getItem('token');
+    const adminStoredToken = localStorage.getItem('adminToken');
     setToken(storedToken || '');
+    setAdminToken(adminStoredToken || '')
   };
 
   useEffect(() => {
@@ -29,7 +34,8 @@ function App() {
       <div>
         <Routes>
           <Route path="/" element={token ? <Navigate to="/home" /> : <LoginSignup setToken={setToken} />} />
-
+          <Route path="/admin" element={adminToken ? <AdminPanel setAdminToken={setAdminToken}/> : <Navigate to="/adminLogin" />} />
+          <Route path="/adminLogin" element={adminToken ? <Navigate to="/admin"/> : <AdminLogSign setAdminToken={setAdminToken}/>} />
           <Route path="/home" element={token ? <Hero setToken = {setToken}/> : <Navigate to="/" />} />
           <Route path="/bloodRequirement" element={token ? <BloodRequirement setToken = {setToken}/> : <Navigate to="/" />} />
           <Route path="/donationDetails" element={token ? <DonationDetails setToken = {setToken}/> : <Navigate to="/" />} />

@@ -6,9 +6,8 @@ const bloodGroups = [
     'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'HH (Bombay Blood Group)', 'INRA'
 ];
 
-const DonationDetails = ({setToken}) => {
+const DonationDetails = ({ setToken }) => {
     const [donationDetails, setDonationDetails] = useState(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
     const [name, setName] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [bloodGroup, setBloodGroup] = useState('');
@@ -17,14 +16,11 @@ const DonationDetails = ({setToken}) => {
     const queryParams = new URLSearchParams(location.search);
     const donationId = queryParams.get('donationId');
 
-    const openModal = () => setIsModalOpen(true);
-    const closeModal = () => setIsModalOpen(false);
-
     useEffect(() => {
         const getDonationDetails = async () => {
             try {
                 const token = localStorage.getItem("token")
-                const response = await axios.post('http://localhost:7000/donatersDetail', { donaterId: donationId }, {
+                const response = await axios.get('http://localhost:7000/donatersDetail', { donaterId: donationId }, {
                     headers: { Authorization: token }
                 });
                 setDonationDetails(response.data);
@@ -86,7 +82,6 @@ const DonationDetails = ({setToken}) => {
             <div className="modal">
                 <h2>Submit Your Details</h2>
                 <div className="modal-content" style={{ display: "flex", justifyContent: "center" }}>
-
                     <div>
                         <label htmlFor="name">Name:</label>
                         <input
