@@ -34,13 +34,6 @@ const Hero = ({setToken}) => {
 
     if (location.latitude && location.longitude) {
       try {
-        // const response = await axios.post(
-        //   "http://localhost:7000/getLocation",
-        //   { location },
-        //   {
-        //     headers: { Authorization: token }
-        //   }
-
           const response = await axios.get(
             "http://localhost:7000/getLocation",
             

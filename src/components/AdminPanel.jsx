@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 
 function AdminPanel({ setAdminToken }) {
     const [pendingUsers, setPendingUsers] = useState([]);
+    const[users , setUsers] = useState([])
     const token = localStorage.getItem('adminToken')
 
     useEffect(() => {
@@ -72,6 +73,9 @@ function AdminPanel({ setAdminToken }) {
                     ))}
                 </ul>
             )}
+
+            <h2>Registered Users</h2>
+
         </div>
     );
 }
