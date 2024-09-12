@@ -20,8 +20,9 @@ const DonationDetails = ({ setToken }) => {
         const getDonationDetails = async () => {
             try {
                 const token = localStorage.getItem("token")
-                const response = await axios.get('http://localhost:7000/donatersDetail', { donaterId: donationId }, {
-                    headers: { Authorization: token }
+                const response = await axios.get('http://localhost:7000/donatersDetail', {
+                    headers: { Authorization: token },
+                    params: { donaterId: donationId }  // Pass donaterId as a query parameter
                 });
                 setDonationDetails(response.data);
                 console.log(response.data);

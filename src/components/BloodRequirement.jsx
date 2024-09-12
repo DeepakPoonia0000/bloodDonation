@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import './styles/BloodRequirement.css'
 import { Link } from 'react-router-dom';
 
-const BloodRequirement = ({setToken}) => {
+const BloodRequirement = ({ setToken }) => {
     const [requests, setRequests] = useState([]);
     const [bloodGroup, setBloodGroup] = useState('');
     const [name, setName] = useState('');
@@ -13,9 +13,39 @@ const BloodRequirement = ({setToken}) => {
     });
     const [successMessage, setSuccessMessage] = useState('');
 
+    const [campName, setCampName] = useState('');
+    const [campAddress, setCampAddress] = useState('');
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
+    const [campRequests, setCampRequests] = useState([]);
+
+    const handleSubmit = async () => {
+        const formData = {
+            location,
+            campName,
+            campAddress,
+            startDate,
+            endDate
+        };
+        const token = localStorage.getItem('token')
+
+        try {
+            const response = await axios.post('http://localhost:7000/addCamp', formData, {
+                headers: {
+                    Authorization: token
+                }
+            });
+            console.log('Camp Data submitted successfully:', response.data);
+            getSentCampRequests();
+        } catch (error) {
+            console.error('Error submitting data:', error);
+        }
+    };
+
     useEffect(() => {
         getLocation();
         getSentRequests();
+        getSentCampRequests();
     }, []);
 
     const getLocation = () => {
@@ -55,31 +85,33 @@ const BloodRequirement = ({setToken}) => {
     const bloodRequest = async () => {
         if (!bloodGroup || !location) {
             window.alert("Blood Group and location is required for sending request");
-        }else{
-        const userData = { bloodGroup, location, name };
-        const token = localStorage.getItem("token")
-        try {
-            const response = await axios.post("http://localhost:7000/sendBloodRequest", userData, {
-                headers: { Authorization: token }
-            });
-            setSuccessMessage('Blood request sent successfully!');
-            console.log("response is this from =>", response.data);
-        } catch (error) {
-            console.error('Request failed:', error);
-            setSuccessMessage('Failed to send blood request. Please try again.');
-        }}
+        } else {
+            const userData = { bloodGroup, location, name };
+            const token = localStorage.getItem("token")
+            try {
+                const response = await axios.post("http://localhost:7000/sendBloodRequest", userData, {
+                    headers: { Authorization: token }
+                });
+                setSuccessMessage('Blood request sent successfully!');
+                console.log("response is this from =>", response.data);
+            } catch (error) {
+                console.error('Request failed:', error);
+                setSuccessMessage('Failed to send blood request. Please try again.');
+            }
+        }
 
         getSentRequests();
     };
 
 
     const getSentRequests = async () => {
-        const userData = { bloodGroup, location, name };
         const token = localStorage.getItem("token")
         try {
-            const response = await axios.post("http://localhost:7000/getUploadedRequest", userData, {
-                headers: { Authorization: token }
-            });
+            const response = await axios.get("http://localhost:7000/getUploadedRequest",
+                 
+                {
+                    headers: { Authorization: token }
+                });
             setRequests(response.data.requests);
             console.log("response is this for sent requests =>", requests);
         } catch (error) {
@@ -88,8 +120,94 @@ const BloodRequirement = ({setToken}) => {
         }
     };
 
+    const getSentCampRequests = async (req, res) => {
+        const token = localStorage.getItem('token');
+        try {
+            const response = await axios.get("http://localhost:7000/getUserCamps", {
+                
+                headers: { Authorization: token },
+            })
+            setCampRequests(response.data.camps);
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const deleteCamp = async (campId) => {
+        const token = localStorage.getItem('token');
+        try {
+            const response = await axios.delete("http://localhost:7000/deleteCamp", {
+                params:{
+                    campId:campId
+                },
+                headers: {
+                    Authorization: token
+                }
+            })
+            getSentCampRequests();
+            console.log(response.data.message)
+        } catch (error) {
+            console.log(error)
+        }
+    }
     return (
         <>
+            <div style={{ width: "100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+                <h1>Post Camp Details</h1>
+                <input
+                    type="text"
+                    name="campName"
+                    id="campName"
+                    placeholder='Enter Camp Name'
+                    value={campName}
+                    onChange={(e) => setCampName(e.target.value)}
+                    style={{ width: "300px", marginBottom: '10px' }}
+                />
+                <input
+                    type="text"
+                    name="campAddress"
+                    id="campAddress"
+                    placeholder='Enter the address of the camp'
+                    value={campAddress}
+                    onChange={(e) => setCampAddress(e.target.value)}
+                    style={{ width: "300px", marginBottom: '10px' }}
+                />
+                <label htmlFor="startDate" style={{ marginBottom: '5px' }}>from</label>
+                <input
+                    type="date"
+                    name="startDate"
+                    id="startDate"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    style={{ width: "120px", marginBottom: '10px' }}
+                />
+                <label htmlFor="endDate" style={{ marginBottom: '5px' }}>to</label>
+                <input
+                    type="date"
+                    name="endDate"
+                    id="endDate"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    style={{ width: "120px", marginBottom: '10px' }}
+                />
+                <button onClick={handleSubmit} style={{ marginTop: '10px' }}>Submit</button>
+            </div>
+
+            <h2>Posted Camps</h2>
+            {campRequests.length > 0 ? (
+                campRequests.map((camp) => (
+                    <div key={camp._id} style={{ border: '1px solid black', margin: '10px', padding: '10px' }}>
+                        <h3>{camp.campName}</h3>
+                        <p>Address: {camp.campAddress}</p>
+                        <p>Start Date: {camp.startDate}</p>
+                        <p>End Date: {camp.endDate}</p>
+                        <button onClick={() => deleteCamp(camp._id)}>Delete</button>
+                    </div>
+                ))
+            ) : (
+                <p>No camps posted yet.</p>
+            )}
+
             <div className="blood-request-form">
                 <label htmlFor="bloodGroup" className="form-label">
                     Enter the Blood Group in small case letters e.g., a+, b+, o-
@@ -136,18 +254,18 @@ const BloodRequirement = ({setToken}) => {
             <div className='user-Requests'>
                 {requests.map((donater, index) => (
                     <div className='requests'>
-                    <Link to={`/donorsResponse?requestNumber=${donater._id}`} className='links-decorations'>
-                    <div key={donater._id}>
-                        <p>Required Blood Group - {donater.bloodGroup}</p>
-                        <p>Requestd by - {donater.name}</p>
-                        <p>Phone Number - {donater.phoneNumber}</p>
-                        <p>Requested at - {new Date(donater.dateOfQuery).toLocaleTimeString()}</p>
-                        
-                        <p>Donors Responded - {donater.donorsResponse.length}</p>
-                        <br /><br />
-                    </div>
-                    </Link>
-                    <p>
+                        <Link to={`/donorsResponse?requestNumber=${donater._id}`} className='links-decorations'>
+                            <div key={donater._id}>
+                                <p>Required Blood Group - {donater.bloodGroup}</p>
+                                <p>Requestd by - {donater.name}</p>
+                                <p>Phone Number - {donater.phoneNumber}</p>
+                                <p>Requested at - {new Date(donater.dateOfQuery).toLocaleTimeString()}</p>
+
+                                <p>Donors Responded - {donater.donorsResponse.length}</p>
+                                <br /><br />
+                            </div>
+                        </Link>
+                        <p>
                             <a
                                 href={`https://www.google.com/maps?q=${donater.location.latitude},${donater.location.longitude}`}
                                 target="_blank"
@@ -159,6 +277,8 @@ const BloodRequirement = ({setToken}) => {
                     </div>
                 ))}
             </div>
+
+
         </>
     );
 }

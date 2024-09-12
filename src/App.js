@@ -10,6 +10,8 @@ import DonationDetails from './components/DonationDetails';
 import DonorResponse from './components/DonorResponse';
 import AdminPanel from './components/AdminPanel';
 import AdminLogSign from './components/AdminLogSign';
+import UserDetails from './components/UserDetails';
+import DonorResponseAdmin from './components/DonorResponseAdmin';
 
 function App() {
 
@@ -40,6 +42,8 @@ function App() {
           <Route path="/bloodRequirement" element={token ? <BloodRequirement setToken = {setToken}/> : <Navigate to="/" />} />
           <Route path="/donationDetails" element={token ? <DonationDetails setToken = {setToken}/> : <Navigate to="/" />} />
           <Route path="/donorsResponse" element={token ? <DonorResponse setToken = {setToken} /> : <Navigate to="/" />} />
+          <Route path="/userDetails" element={adminToken ? <UserDetails/> : <Navigate to="/adminLogin" />} />
+          <Route path="/donorsResponseAdmin" element={adminToken ? <DonorResponseAdmin/> : <Navigate to="/adminLogin" />} />
         </Routes>
       </div>
     </div>

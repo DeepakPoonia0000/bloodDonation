@@ -25,8 +25,11 @@ const DonorResponse = ({ setToken }) => {
     try {
       const response = await axios.get(
         "http://localhost:7000/getDonorsResponses",
-        { requestId: requestNumber },
-        { headers: { Authorization: token } }
+
+        {
+          params: { requestId: requestNumber },
+          headers: { Authorization: token }
+        }
       );
       setResponses(response.data.donorsResponse);
       console.log("response is this for sent requests =>", response.data.donorsResponse);
@@ -41,7 +44,7 @@ const DonorResponse = ({ setToken }) => {
       <h2>Donor Responses</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {responses.length > 0 ? (
-        <ul>
+        <ul className='donor-responses'>
           {responses.map((response, index) => (
             <li key={index}>
               <p>Donor ID: {response.donorId}</p>
