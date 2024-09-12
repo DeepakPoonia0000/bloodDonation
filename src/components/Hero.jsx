@@ -95,7 +95,7 @@ const Hero = ({ setToken }) => {
           },
           headers: { Authorization: token },
         })
-        // setCampRequests(response.data.camps);
+        setCampRequests(response.data);
         console.log(response)
       } catch (error) {
         console.log(error)
