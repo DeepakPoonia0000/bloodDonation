@@ -90,12 +90,12 @@ const BloodRequirement = ({setToken}) => {
 
     return (
         <>
-            <div className="blood-request-form">
+            <div className="blood-request-form ">
                 <label htmlFor="bloodGroup" className="form-label">
                     Enter the Blood Group in small case letters e.g., a+, b+, o-
                 </label>
                 <br />
-                <select value={bloodGroup} onChange={(e) => setBloodGroup(e.target.value)}>
+                <select className='h-10 border-2 border-black' value={bloodGroup} onChange={(e) => setBloodGroup(e.target.value)}>
                     <option value="">Select Your Blood Group</option>
                     <option value="a+">A+</option>
                     <option value="a-">A-</option>
@@ -125,7 +125,7 @@ const BloodRequirement = ({setToken}) => {
                     onChange={(e) => setName(e.target.value)}
                 />
                 <br />
-                <button className="form-button" onClick={bloodRequest}>
+                <button className="form-button !bg-red-400 hover:!bg-red-500" onClick={bloodRequest}>
                     Request Blood
                 </button><br />
                 {successMessage && <p className="success-message">{successMessage}</p>}
@@ -133,17 +133,29 @@ const BloodRequirement = ({setToken}) => {
                 <button onClick={getSentRequests}>My Requests</button>
             </div>
             <h2>Your Requests</h2>
-            <div className='user-Requests'>
+            <div className='user-Requests lg:text-2xl sm:text-2xl xl:text-2xl md:text-xl  text-xl ml-2 mr-2 mb-10 flex items-center justify-evenly'>
                 {requests.map((donater, index) => (
-                    <div className='requests'>
+                    <div className='request border-4 bg-body-tertiary  py-2  px-3  rounded-xl hover:shadow-2xl'>
                     <Link to={`/donorsResponse?requestNumber=${donater._id}`} className='links-decorations'>
                     <div key={donater._id}>
-                        <p>Required Blood Group - {donater.bloodGroup}</p>
-                        <p>Requestd by - {donater.name}</p>
-                        <p>Phone Number - {donater.phoneNumber}</p>
-                        <p>Requested at - {new Date(donater.dateOfQuery).toLocaleTimeString()}</p>
+                        <div className='flex ml-2 justify-between mr-4  '>
+                        <p>Required Blood Group :</p> <p className='bg-red-500 px-4 py-1 flex items-center justify-center rounded-2xl text-white'> {donater.bloodGroup.toUpperCase()}</p>
+                        </div>
+                        <div className='flex ml-2 justify-between mr-2 items-start'>
+                        <p>Requestd by : </p> <p> {donater.name}</p>
+                        </div>
+                        <div className='flex ml-2 justify-between mr-2 items-start'>
                         
-                        <p>Donors Responded - {donater.donorsResponse.length}</p>
+                        <p>Phone Number :</p> <p> {donater.phoneNumber}</p>
+                        </div>
+                        <div className='flex ml-2 justify-between mr-2 items-start'>
+
+                        <p>Requested at : </p><p> {new Date(donater.dateOfQuery).toLocaleTimeString()}</p>
+                        </div>                  
+                        <div className='flex ml-2 justify-between mr-2 items-start'>
+      
+                        <p>Donors Responded : </p><p> {donater.donorsResponse.length}</p>
+                        </div>                        
                         <br /><br />
                     </div>
                     </Link>

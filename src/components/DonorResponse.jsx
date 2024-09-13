@@ -8,6 +8,12 @@ const DonorResponse = ({ setToken }) => {
 
   const location = useLocation(); // Get the location object from react-router-dom
 
+
+    // for go to the top on reload the page
+    useEffect(() => {
+      window.scrollTo(0, 0);
+    }, []);
+
   useEffect(() => {
     // Extract requestNumber from the URL query parameters
     const queryParams = new URLSearchParams(location.search);
@@ -25,8 +31,11 @@ const DonorResponse = ({ setToken }) => {
     try {
       const response = await axios.get(
         "http://localhost:7000/getDonorsResponses",
-        { requestId: requestNumber },
-        { headers: { Authorization: token } }
+
+        {
+          params: { requestId: requestNumber },
+          headers: { Authorization: token }
+        }
       );
       setResponses(response.data.donorsResponse);
       console.log("response is this for sent requests =>", response.data.donorsResponse);
@@ -37,7 +46,7 @@ const DonorResponse = ({ setToken }) => {
   };
 
   return (
-    <div>
+    <div className="min-h-screen">
       <h2>Donor Responses</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {responses.length > 0 ? (

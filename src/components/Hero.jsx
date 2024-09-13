@@ -12,7 +12,7 @@ const DropdownCard = ({ title, content }) => {
 
   return (
     <div className="dropdown-card">
-      <button className="dropdown-toggle" onClick={toggleDropdown}>
+      <button className="dropdown-toggle text-wrap" onClick={toggleDropdown}>
         {isOpen ? `Hide ${title}` : `Show ${title}`}
       </button>
       {isOpen && <div className="dropdown-content">{content}</div>}
@@ -20,7 +20,7 @@ const DropdownCard = ({ title, content }) => {
   );
 };
 
-const Hero = ({setToken}) => {
+const Hero = ({ setToken }) => {
   const [donaters, setDonaters] = useState([]);
   const [location, setLocation] = useState({
     longitude: null,
@@ -34,13 +34,13 @@ const Hero = ({setToken}) => {
 
     if (location.latitude && location.longitude) {
       try {
-          const response = await axios.get(
-            "http://localhost:7000/getLocation",
-            
-            {
-              params:{ location },
-              headers: { Authorization: token }
-            }
+        const response = await axios.get(
+          "http://localhost:7000/getLocation",
+
+          {
+            params: { location },
+            headers: { Authorization: token }
+          }
         );
 
         console.log(response);
@@ -81,56 +81,65 @@ const Hero = ({setToken}) => {
 
   return (
     <div className="hero-container">
-      <button onClick={() => navigate("/bloodRequirement")}>
+      {/* <button onClick={() => navigate("/bloodRequirement")}>
         Post Blood Requirement REQUEST
-      </button>
+      </button> */}
       <br /><br />
       {/* <Link to='/bloodRequirement'>Post Blood Requirement REQUEST</Link> */}
 
-      <button onClick={sendLocation}>Get Requests</button>
+      {/* <button onClick={sendLocation}>Get Requests</button> */}
       <div>
-        <ul className="donater-grid">
+        <ul className="donater-grid ml-2 mr-2 flex items-center lg:text-2xl justify-evenly">
           {donaters.map((donater, index) => (
             <Link to={`/donationDetails?donationId=${donater._id}`} key={index}>
-            <li >
-              <div>
-                <p>Required Blood Group - {donater.bloodGroup}</p>
-                <p>
-                  <a
-                    href={`https://wa.me/${donater.phoneNumber}?text=${encodeURIComponent(
-                      `Blood request for group ${donater.bloodGroup}. Location: https://www.google.com/maps?q=${donater.location.latitude},${donater.location.longitude}`
-                    )}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Send WhatsApp Message
-                  </a>
-                </p>
-                <p>Requested at - {new Date(donater.dateOfQuery).toLocaleTimeString()}</p>
-                <p>
-                  <a
-                    href={`https://www.google.com/maps?q=${donater.location.latitude},${donater.location.longitude}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    View Location on Google Maps
-                  </a>
-                </p>
-              </div>
-              <p>Donors Responded - {donater.donorsResponse.length}</p>
-            </li>
+              <li className='border-4' >
+                <div>
+                  <div className='flex flex-wrap justify-between w-full'>
+                    <p>Required Blood Group</p>
+                    <p className='text-white flex  justify-center items-center rounded-2xl px-4 py-1 bg-red-500'> {donater.bloodGroup.toUpperCase()}</p>
+                  </div>
+                  <div className='flex flex-wrap justify-between w-full'>
+                    <p>
+                      <a
+                        href={`https://wa.me/${donater.phoneNumber}?text=${encodeURIComponent(
+                          `Blood request for group ${donater.bloodGroup}. Location: https://www.google.com/maps?q=${donater.location.latitude},${donater.location.longitude}`
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Send WhatsApp Message
+                      </a>
+                    </p>
+                  </div>
+                  <div className='flex felx-wrap justify-between w-full'>
+                    <p>Requested at - {new Date(donater.dateOfQuery).toLocaleTimeString()}</p>
+                  </div>
+                  <p className='flex'>
+                    <a
+                      href={`https://www.google.com/maps?q=${donater.location.latitude},${donater.location.longitude}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      View Location on Google Maps
+                    </a>
+                  </p>
+                </div>
+                <p className='flex'>Donors Responded - {donater.donorsResponse.length}</p>
+              </li>
             </Link>
           ))}
         </ul>
       </div>
 
-      <div className="motivational-wrapper">
+      <div className="motivational-wrapper font-bold text-slate-700">
         <DropdownCard
           title="Why Donate Blood?"
           content={
             <>
+            <div className=''>
               <h3>Why Donate Blood?</h3>
               <p>Every drop counts. Your blood donation can save up to three lives! It’s a simple, yet powerful way to give back and help those in need.</p>
+              </div>
             </>
           }
         />
@@ -177,7 +186,7 @@ const Hero = ({setToken}) => {
         }
       /> */}
       </div>
-      <button onClick={()=> {localStorage.clear(); setToken("")}}>Log Out</button>
+      <button onClick={() => { localStorage.clear(); setToken("") }}>Log Out</button>
     </div>
   );
 };

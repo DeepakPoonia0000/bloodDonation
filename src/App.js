@@ -10,7 +10,11 @@ import DonationDetails from './components/DonationDetails';
 import DonorResponse from './components/DonorResponse';
 import AdminPanel from './components/AdminPanel';
 import AdminLogSign from './components/AdminLogSign';
-
+import UserDetails from './components/UserDetails';
+import DonorResponseAdmin from './components/DonorResponseAdmin';
+import Navbarjs from './components/Navbarjs';
+import Footer from './components/Footer';
+import AboutPage from './components/AboutPage';
 function App() {
 
   const [token, setToken] = useState('');
@@ -31,17 +35,22 @@ function App() {
 
   return (
     <div className="App">
-      <div>
+    {adminToken? "" : <Navbarjs setToken={setToken}/>}
+      <div>    
         <Routes>
-          <Route path="/" element={token ? <Navigate to="/home" /> : <LoginSignup setToken={setToken} />} />
+        <Route path="/" element={token ? <Navigate to="/home" /> : <LoginSignup setToken={setToken} />} />
           <Route path="/admin" element={adminToken ? <AdminPanel setAdminToken={setAdminToken}/> : <Navigate to="/adminLogin" />} />
           <Route path="/adminLogin" element={adminToken ? <Navigate to="/admin"/> : <AdminLogSign setAdminToken={setAdminToken}/>} />
           <Route path="/home" element={token ? <Hero setToken = {setToken}/> : <Navigate to="/" />} />
           <Route path="/bloodRequirement" element={token ? <BloodRequirement setToken = {setToken}/> : <Navigate to="/" />} />
           <Route path="/donationDetails" element={token ? <DonationDetails setToken = {setToken}/> : <Navigate to="/" />} />
           <Route path="/donorsResponse" element={token ? <DonorResponse setToken = {setToken} /> : <Navigate to="/" />} />
+          <Route path="/userDetails" element={adminToken ? <UserDetails/> : <Navigate to="/adminLogin" />} />
+          <Route path="/donorsResponseAdmin" element={ <DonorResponseAdmin/>} />
+          <Route path='/about' element={<AboutPage/>}/>
         </Routes>
       </div>
+      { adminToken? "" : <Footer/>}
     </div>
   );
 }

@@ -9,7 +9,7 @@
   }
   
   .form-label {
-    font-size: 14px;
+    font-size: 24px;
     color: #333;
     margin-bottom: 5px;
     display: inline-block;
@@ -52,7 +52,7 @@
   
   .user-Requests{
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(250px, 550px));
     gap: 15px;
   }
 
