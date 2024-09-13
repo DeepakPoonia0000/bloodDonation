@@ -47,7 +47,8 @@ const Hero = ({ setToken }) => {
 
         console.log(response);
         // window.alert("Requests Fetched Successfully");
-        setDonaters(response.data);
+        setDonaters(response.data.donaters);
+        setCampRequests(response.data.camps)
       } catch (error) {
         console.log(error);
       }
@@ -79,29 +80,29 @@ const Hero = ({ setToken }) => {
   useEffect(() => {
     if (location.latitude && location.longitude) {
       sendLocation();
-      getSentCampRequests();
+      // getSentCampRequests();
     }
   }, [location]);
 
 
 
-  const getSentCampRequests = async (req, res) => {
-    const token = localStorage.getItem('token');
-    if (location.latitude && location.longitude) {
-      try {
-        const response = await axios.get("http://localhost:7000/getCamps", {
-          params: {
-            location: location
-          },
-          headers: { Authorization: token },
-        })
-        setCampRequests(response.data);
-        console.log(response)
-      } catch (error) {
-        console.log(error)
-      }
-    }
-  }
+  // const getSentCampRequests = async (req, res) => {
+  //   const token = localStorage.getItem('token');
+  //   if (location.latitude && location.longitude) {
+  //     try {
+  //       const response = await axios.get("http://localhost:7000/getCamps", {
+  //         params: {
+  //           location
+  //         },
+  //         headers: { Authorization: token },
+  //       })
+  //       setCampRequests(response.data);
+  //       console.log(response)
+  //     } catch (error) {
+  //       console.log(error)
+  //     }
+  //   }
+  // }
 
 
   return (
