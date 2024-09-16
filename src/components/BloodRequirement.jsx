@@ -18,6 +18,22 @@ const BloodRequirement = ({ setToken }) => {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [campRequests, setCampRequests] = useState([]);
+    const [maxEndDate, setMaxEndDate] = useState('');
+
+    // Get today's date in 'YYYY-MM-DD' format
+    const currentDate = new Date().toISOString().split('T')[0];
+
+    // Calculate the max end date based on startDate and set it
+    useEffect(() => {
+        if (startDate) {
+            const start = new Date(startDate);
+            const maxDate = new Date(start);
+            maxDate.setDate(start.getDate() + 10); // Add 10 days
+            setMaxEndDate(maxDate.toISOString().split('T')[0]); // Set the max end date in 'YYYY-MM-DD' format
+        } else {
+            setMaxEndDate(''); // Reset max end date if no start date is selected
+        }
+    }, [startDate]); // Only recalculate when startDate changes
 
     const handleSubmit = async () => {
         const formData = {
@@ -108,7 +124,7 @@ const BloodRequirement = ({ setToken }) => {
         const token = localStorage.getItem("token")
         try {
             const response = await axios.get("http://localhost:7000/getUploadedRequest",
-                 
+
                 {
                     headers: { Authorization: token }
                 });
@@ -124,7 +140,7 @@ const BloodRequirement = ({ setToken }) => {
         const token = localStorage.getItem('token');
         try {
             const response = await axios.get("http://localhost:7000/getUserCamps", {
-                
+
                 headers: { Authorization: token },
             })
             setCampRequests(response.data.camps);
@@ -137,8 +153,8 @@ const BloodRequirement = ({ setToken }) => {
         const token = localStorage.getItem('token');
         try {
             const response = await axios.delete("http://localhost:7000/deleteCamp", {
-                params:{
-                    campId:campId
+                params: {
+                    campId: campId
                 },
                 headers: {
                     Authorization: token
@@ -172,24 +188,28 @@ const BloodRequirement = ({ setToken }) => {
                     onChange={(e) => setCampAddress(e.target.value)}
                     style={{ width: "300px", marginBottom: '10px' }}
                 />
-                <label htmlFor="startDate" style={{ marginBottom: '5px' }}>from</label>
-                <input
-                    type="date"
-                    name="startDate"
-                    id="startDate"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    style={{ width: "120px", marginBottom: '10px' }}
-                />
-                <label htmlFor="endDate" style={{ marginBottom: '5px' }}>to</label>
-                <input
-                    type="date"
-                    name="endDate"
-                    id="endDate"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    style={{ width: "120px", marginBottom: '10px' }}
-                />
+                <label htmlFor="startDate" style={{ marginBottom: '5px' }}>From</label>
+            <input
+                type="date"
+                name="startDate"
+                id="startDate"
+                value={startDate}
+                min={currentDate} // Only allow current and future dates
+                onChange={(e) => setStartDate(e.target.value)}
+                style={{ width: "120px", marginBottom: '10px' }}
+            />
+            <label htmlFor="endDate" style={{ marginBottom: '5px' }}>To</label>
+            <input
+                type="date"
+                name="endDate"
+                id="endDate"
+                value={endDate}
+                min={startDate || currentDate} // End date cannot be before the start date
+                max={maxEndDate} // Set the max date 10 days after the start date
+                onChange={(e) => setEndDate(e.target.value)}
+                style={{ width: "120px", marginBottom: '10px' }}
+                disabled={!startDate} // Disable the end date until a start date is selected
+            />
                 <button onClick={handleSubmit} style={{ marginTop: '10px' }}>Submit</button>
             </div>
 

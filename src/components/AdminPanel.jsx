@@ -84,16 +84,16 @@ function AdminPanel({ setAdminToken }) {
             <ul className='admin-registeredUsers'>
                 {registeredUsers.map(user => (
                     <Link to={`/userDetails?userId=${user._id}`} key={user._id}>
-                    <li>
-                        <p>UserId - {user._id}</p>
-                        <p>Blood Group - {user.bloodGroup}</p>
-                        <p>Joined On - {Date(user.joinedOn)}</p>
-                        <p>Phone Number - {user.phoneNumber}</p>
+                        <li>
+                            <p>UserId - {user._id}</p>
+                            <p>Blood Group - {user.bloodGroup}</p>
+                            <p>Joined On - {Date(user.joinedOn)}</p>
+                            <p>Phone Number - {user.phoneNumber}</p>
                         </li>
-                        </Link>
+                    </Link>
                 ))}
             </ul>
-                <button onClick={adminLogOut}>Log Out</button>
+            <button onClick={adminLogOut}>Log Out</button>
         </div>
     );
 }

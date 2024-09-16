@@ -35,10 +35,12 @@ const DonationDetails = ({ setToken }) => {
         if (donationId) {
             getDonationDetails();
         }
+
+        
     }, [donationId]);
 
     const handleSubmit = async () => {
-        const token = localStorage.getItem('token')
+        const token = localStorage.getItem('token');
         const data = {
             requestId: donationId,
             phoneNumber,
@@ -49,16 +51,26 @@ const DonationDetails = ({ setToken }) => {
             const response = await axios.post('http://localhost:7000/addDonorToTheRequest', data, {
                 headers: { Authorization: token }
             });
-            console.log(response);
-            window.alert('Data submitted successfully');
+
+            // Show the message returned from the server
+            const message = response.data.message;
+            window.alert(message);
+
+            // Clear input fields after successful submission
             setName('');
             setPhoneNumber('');
             setBloodGroup('');
         } catch (error) {
-            console.log(error);
-            window.alert('Failed to submit data');
+            // Check if there's an error message in the response
+            if (error.response && error.response.data && error.response.data.message) {
+                window.alert(error.response.data.message);
+            } else {
+                window.alert('Failed to submit data');
+            }
+            console.error('Error submitting data:', error);
         }
     };
+
 
     if (!donationDetails) {
         return <p>No details available</p>;
