@@ -3,14 +3,30 @@ import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 
 const bloodGroups = [
-    'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'HH (Bombay Blood Group)', 'INRA'
+    'a+', 'a-', 'b+', 'b-', 'ab+', 'ab-', 'o+', 'o-', 'hh (bombay blood group)', 'inra'
 ];
+
+// Blood compatibility mapping
+const compatibility = {
+    'a+': ['a+', 'ab+'],
+    'a-': ['a+', 'a-', 'ab+', 'ab-'],
+    'b+': ['b+', 'ab+'],
+    'b-': ['b+', 'b-', 'ab+', 'ab-'],
+    'ab+': ['ab+'],
+    'ab-': ['ab+', 'ab-'],
+    'o+': ['o+', 'a+', 'b+', 'ab+'],
+    'o-': ['o+', 'o-', 'a+', 'a-', 'b+', 'b-', 'ab+', 'ab-'],
+    'hh (bombay blood group)': ['hh (bombay blood group)'],
+    'inra': ['inra'] // Add compatibility rules for INRA
+};
 
 const DonationDetails = ({ setToken }) => {
     const [donationDetails, setDonationDetails] = useState(null);
     const [name, setName] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [bloodGroup, setBloodGroup] = useState('');
+    const [requiredBlood, setRequiredBlood] = useState('');
+    const [filteredBloodGroups, setFilteredBloodGroups] = useState(bloodGroups);
     const location = useLocation();
 
     const queryParams = new URLSearchParams(location.search);
@@ -19,13 +35,17 @@ const DonationDetails = ({ setToken }) => {
     useEffect(() => {
         const getDonationDetails = async () => {
             try {
-                const token = localStorage.getItem("token")
+                const token = localStorage.getItem("token");
                 const response = await axios.get('http://localhost:7000/donatersDetail', {
                     headers: { Authorization: token },
                     params: { donaterId: donationId }  // Pass donaterId as a query parameter
                 });
                 setDonationDetails(response.data);
                 console.log(response.data);
+
+                // Set required blood group from response data
+                const bloodGroupFromResponse = response.data.bloodGroup.toLowerCase();
+                setRequiredBlood(bloodGroupFromResponse);
             } catch (error) {
                 console.log(error);
                 window.alert('Failed to get donation details');
@@ -35,9 +55,15 @@ const DonationDetails = ({ setToken }) => {
         if (donationId) {
             getDonationDetails();
         }
-
-        
     }, [donationId]);
+
+    useEffect(() => {
+        if (requiredBlood) {
+            setFilteredBloodGroups(bloodGroups.filter(group => compatibility[group]?.includes(requiredBlood)));
+        } else {
+            setFilteredBloodGroups(bloodGroups);
+        }
+    }, [requiredBlood]);
 
     const handleSubmit = async () => {
         const token = localStorage.getItem('token');
@@ -70,7 +96,6 @@ const DonationDetails = ({ setToken }) => {
             console.error('Error submitting data:', error);
         }
     };
-
 
     if (!donationDetails) {
         return <p>No details available</p>;
@@ -121,7 +146,7 @@ const DonationDetails = ({ setToken }) => {
                             onChange={(e) => setBloodGroup(e.target.value)}
                         >
                             <option value="">Select Blood Group</option>
-                            {bloodGroups.map((group, index) => (
+                            {filteredBloodGroups.map((group, index) => (
                                 <option key={index} value={group}>
                                     {group}
                                 </option>
