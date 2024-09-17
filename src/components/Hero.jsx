@@ -2,24 +2,31 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './styles/Hero.css';
 import { Link, useNavigate } from 'react-router-dom';
+import Aos from 'aos';
+import 'aos/dist/aos.css';
+import Accordion from 'react-bootstrap/Accordion';
+import { FaHeartbeat, FaHandHoldingHeart, FaTint } from 'react-icons/fa';
 
-const DropdownCard = ({ title, content }) => {
-  const [isOpen, setIsOpen] = useState(false);
+// const DropdownCard = ({ title, content }) => {
+//   const [isOpen, setIsOpen] = useState(false);
+
+//   const toggleDropdown = () => {
+//     setIsOpen(!isOpen);
+//   };
+
+//   return (
+//     <div className="dropdown-card">
+//       <button className="dropdown-toggle text-wrap" onClick={toggleDropdown}>
+//         {isOpen ? `Hide ${title}` : `Show ${title}`}
+//       </button>
+//       {isOpen && <div className="dropdown-content bg-white text-red-500">{content}</div>}
+//     </div>
+//   );
+// };
 
 
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
-  };
 
-  return (
-    <div className="dropdown-card">
-      <button className="dropdown-toggle" onClick={toggleDropdown}>
-        {isOpen ? `Hide ${title}` : `Show ${title}`}
-      </button>
-      {isOpen && <div className="dropdown-content">{content}</div>}
-    </div>
-  );
-};
+
 
 const Hero = ({ setToken }) => {
   const [donaters, setDonaters] = useState([]);
@@ -28,27 +35,22 @@ const Hero = ({ setToken }) => {
     latitude: null
   });
   const [campRequests, setCampRequests] = useState([]);
-
   const navigate = useNavigate();
 
   const sendLocation = async () => {
     const token = localStorage.getItem('token');
 
+
     if (location.latitude && location.longitude) {
       try {
-        const response = await axios.get(
-          "http://localhost:7000/getLocation",
-
-          {
-            params: { location },
-            headers: { Authorization: token }
-          }
-        );
+        const response = await axios.get('http://localhost:7000/getLocation', {
+          params: { location },
+          headers: { Authorization: token },
+        });
 
         console.log(response);
-        // window.alert("Requests Fetched Successfully");
-        setDonaters(response.data.donaters);
-        setCampRequests(response.data.camps)
+        setDonaters(response.data.donaters || []);  // Handle potential undefined
+        setCampRequests(response.data.camps || []);  // Handle potential undefined
       } catch (error) {
         console.log(error);
       }
@@ -68,7 +70,6 @@ const Hero = ({ setToken }) => {
       );
     } else {
       console.error('Geolocation is not supported by this browser.');
-
     }
   };
 
@@ -80,77 +81,203 @@ const Hero = ({ setToken }) => {
   useEffect(() => {
     if (location.latitude && location.longitude) {
       sendLocation();
-      // getSentCampRequests();
     }
   }, [location]);
 
+  useEffect(() => {
+    Aos.init({ duration: 1000, once: true });
+  }, []);
 
 
-  // const getSentCampRequests = async (req, res) => {
-  //   const token = localStorage.getItem('token');
-  //   if (location.latitude && location.longitude) {
-  //     try {
-  //       const response = await axios.get("http://localhost:7000/getCamps", {
-  //         params: {
-  //           location
-  //         },
-  //         headers: { Authorization: token },
-  //       })
-  //       setCampRequests(response.data);
-  //       console.log(response)
-  //     } catch (error) {
-  //       console.log(error)
-  //     }
-  //   }
-  // }
+  const [showCamps, setShowCamps] = useState(false);
 
 
   return (
-    <div className="hero-container">
-      {campRequests.length > 0 ? (
-        <ul>
-          {campRequests.map((camp, index) => (
-            <li key={index}>
-              <h1>{camp.campName}</h1>
-              <h2>{camp.campAddress}</h2>
-              <h3>
-                from - {new Date(camp.startDate).toLocaleDateString('en-IN')} - to - {new Date(camp.endDate).toLocaleDateString('en-GB')}
-              </h3>
+    <div className="hero-container" data-aos='fade-left'>
 
-              <button onClick={() => window.open(`https://www.google.com/maps?q=${camp.location.latitude},${camp.location.longitude}`, '_blank')}>
-                Location
-              </button>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>No camp requests available.</p>
-      )}
-      <button onClick={() => navigate("/bloodRequirement")}>
+      <div className="max-w-4xl mx-auto p-4">
+
+
+        {/* Accordion for Info Sections */}
+        <Accordion defaultActiveKey="0">
+          {/* Section 1: Eligibility */}
+          <Accordion.Item eventKey="0">
+            <Accordion.Header>
+              <FaTint className="mr-2 text-red-600" /> Eligibility to Donate Blood
+            </Accordion.Header>
+            <Accordion.Body>
+              <ul className="list-disc pl-6">
+                <li>Minimum age to donate blood: 18 years</li>
+                <li>Minimum weight: 50 kg (110 lbs)</li>
+                <li>Donation frequency: Every 56 days for whole blood</li>
+                <li>Healthy with no major medical conditions</li>
+              </ul>
+            </Accordion.Body>
+          </Accordion.Item>
+
+          {/* Section 2: Blood Group Compatibility */}
+          <Accordion.Item eventKey="1">
+            <Accordion.Header>
+              <FaHeartbeat className="mr-2 text-red-600" /> Blood Group Compatibility
+            </Accordion.Header>
+            <Accordion.Body>
+              <h4 className="text-lg font-semibold mb-2">Who can donate to whom?</h4>
+              <div className="overflow-auto">
+                <table className="table-auto w-full border-collapse">
+                  <thead>
+                    <tr className="bg-red-200">
+                      <th className="border p-2 text-red-800">Blood Type</th>
+                      <th className="border p-2 text-red-800">Can Donate To</th>
+                      <th className="border p-2 text-red-800">Can Receive From</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="border p-2">O-</td>
+                      <td className="border p-2">All blood types (Universal Donor)</td>
+                      <td className="border p-2">O-</td>
+                    </tr>
+                    <tr>
+                      <td className="border p-2">O+</td>
+                      <td className="border p-2">O+, A+, B+, AB+</td>
+                      <td className="border p-2">O+, O-</td>
+                    </tr>
+                    <tr>
+                      <td className="border p-2">A-</td>
+                      <td className="border p-2">A-, A+, AB-, AB+</td>
+                      <td className="border p-2">A-, O-</td>
+                    </tr>
+                    <tr>
+                      <td className="border p-2">A+</td>
+                      <td className="border p-2">A+, AB+</td>
+                      <td className="border p-2">A+, A-, O+, O-</td>
+                    </tr>
+                    <tr>
+                      <td className="border p-2">B-</td>
+                      <td className="border p-2">B-, B+, AB-, AB+</td>
+                      <td className="border p-2">B-, O-</td>
+                    </tr>
+                    <tr>
+                      <td className="border p-2">B+</td>
+                      <td className="border p-2">B+, AB+</td>
+                      <td className="border p-2">B+, B-, O+, O-</td>
+                    </tr>
+                    <tr>
+                      <td className="border p-2">AB-</td>
+                      <td className="border p-2">AB-, AB+</td>
+                      <td className="border p-2">AB-, A-, B-, O-</td>
+                    </tr>
+                    <tr>
+                      <td className="border p-2">AB+</td>
+                      <td className="border p-2">AB+ (Universal Receiver)</td>
+                      <td className="border p-2">All blood types</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </Accordion.Body>
+          </Accordion.Item>
+
+          {/* Section 3: Benefits of Blood Donation */}
+          <Accordion.Item eventKey="2">
+            <Accordion.Header>
+              <FaHandHoldingHeart className="mr-2 text-red-600" /> Benefits of Donating Blood
+            </Accordion.Header>
+            <Accordion.Body>
+              <ul className="list-disc pl-6">
+                <li>Helps save lives by providing essential blood to those in need</li>
+                <li>Reduces the risk of heart disease by improving blood flow</li>
+                <li>Promotes healthy cell regeneration and improves cardiovascular health</li>
+                <li>Burns calories and can help with weight maintenance</li>
+                <li>Psychological benefits, including the feeling of helping others</li>
+              </ul>
+            </Accordion.Body>
+          </Accordion.Item>
+        </Accordion>
+      </div>
+      {/* <button onClick={() => navigate("/bloodRequirement")}>
         Post Blood Requirement REQUEST
-      </button>
+      </button> */}
       <br /><br />
-      <button onClick={sendLocation}>Get Requests</button>
-      <div>
-        <ul className="donater-grid">
+      {/* <Link to='/bloodRequirement'>Post Blood Requirement REQUEST</Link> */}
+
+      {/* <button onClick={sendLocation}>Get Requests</button> */}
+
+      <button
+        onClick={() => setShowCamps(!showCamps)}
+        className="mb-4 bg-blue-500  text-white px-4 py-2 rounded hover:bg-blue-600"
+      >
+        {showCamps ? 'Hide Camps' : 'Show Camps'}
+      </button>
+
+      {showCamps ? (
+        campRequests.length > 0 ? (
+          <div className="flex flex-col p-4 md:p-6 lg:p-8">
+            <h2>Camps</h2>
+            <div className="grid gap-4 justify-center items-center md:grid-cols-2 lg:grid-cols-3">
+              {campRequests.map((camp, index) => (
+                <div
+                  key={index}
+                  className={`bg-white shadow-md rounded-lg p-4 md:p-6 lg:p-8 flex flex-col ${camp.value === 2 ? 'md:col-span-2 lg:col-span-1' : ''
+                    }`}
+                  style={camp.value === 2 ? { gridColumn: '2 / 3', gridRow: '1 / 2' } : {}}
+                >
+                  <h1 className="text-xl font-semibold text-gray-800">{camp.campName}</h1>
+                  <h2 className="text-lg text-gray-600">{camp.campAddress}</h2>
+                  <h3 className="text-sm text-gray-500 mb-4">
+                    from - {new Date(camp.startDate).toLocaleDateString('en-IN')} - to -{' '}
+                    {new Date(camp.endDate).toLocaleDateString('en-GB')}
+                  </h3>
+
+                  <button
+                    onClick={() =>
+                      window.open(
+                        `https://www.google.com/maps?q=${camp.location?.latitude},${camp.location?.longitude}`,
+                        '_blank'
+                      )
+                    }
+                    className="mt-auto !bg-red-400 text-white px-4 py-2 rounded !hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                  >
+                    Location
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <p className="text-center text-gray-500 p-4">No camp requests available.</p>
+        )
+      ) : null}
+
+
+      <div data-aos='fade-zoom'>
+        <h2>Blood Request</h2>
+        <ul className="donater-grid ml-2 mr-2 flex items-center lg:text-2xl justify-evenly">
           {donaters.map((donater, index) => (
             <Link to={`/donationDetails?donationId=${donater._id}`} key={index}>
-              <li >
+              <li className='border-4' >
                 <div>
-                  <p>Required Blood Group - {donater.bloodGroup}</p>
-                  <p>
-                    <a
-                      href={`https://wa.me/${donater.phoneNumber}?text=${encodeURIComponent(
-                        `Blood request for group ${donater.bloodGroup}. Location: https://www.google.com/maps?q=${donater.location.latitude},${donater.location.longitude}`
-                      )}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Send WhatsApp Message
-                    </a>
-                  </p>
-                  <p>Requested at - {new Date(donater.dateOfQuery).toLocaleTimeString()}</p>
-                  <p>
+                  <div className='flex flex-wrap justify-between w-full'>
+                    <p>Required Blood Group</p>
+                    <p className='text-white flex  justify-center items-center rounded-2xl px-4 py-1 bg-red-500'> {donater.bloodGroup.toUpperCase()}</p>
+                  </div>
+                  <div className='flex flex-wrap justify-between w-full'>
+                    <p>
+                      <a
+                        href={`https://wa.me/${donater.phoneNumber}?text=${encodeURIComponent(
+                          `Blood request for group ${donater.bloodGroup}. Location: https://www.google.com/maps?q=${donater.location.latitude},${donater.location.longitude}`
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Send WhatsApp Message
+                      </a>
+                    </p>
+                  </div>
+                  <div className='flex felx-wrap justify-between w-full'>
+                    <p>Requested at - {new Date(donater.dateOfQuery).toLocaleTimeString()}</p>
+                  </div>
+                  <p className='flex'>
                     <a
                       href={`https://www.google.com/maps?q=${donater.location.latitude},${donater.location.longitude}`}
                       target="_blank"
@@ -160,67 +287,12 @@ const Hero = ({ setToken }) => {
                     </a>
                   </p>
                 </div>
-                <p>Donors Responded - {donater.donorsResponse.length}</p>
+                <p className='flex'>Donors Responded - {donater.donorsResponse.length}</p>
               </li>
             </Link>
           ))}
         </ul>
       </div>
-
-      <div className="motivational-wrapper">
-        <DropdownCard
-          title="Why Donate Blood?"
-          content={
-            <>
-              <h3>Why Donate Blood?</h3>
-              <p>Every drop counts. Your blood donation can save up to three lives! It’s a simple, yet powerful way to give back and help those in need.</p>
-            </>
-          }
-        />
-
-        <DropdownCard
-          title="Information You Should Know"
-          content={
-            <>
-              <h3>Donate blood, save a life.</h3>
-              <ul>
-                <li>Donation frequency: Every 56 days, up to 6 times a year*</li>
-                <li>You must be in good health and feeling well**</li>
-                <li>You must be at least 16 years old in most states</li>
-                <li>You must weigh at least 110 lbs</li>
-                <li>See additional requirements for students</li>
-              </ul>
-            </>
-          }
-        />
-
-        <DropdownCard
-          title="Facts About Blood Donation"
-          content={
-            <>
-              <h3>Facts About Blood Donation</h3>
-              <ul>
-                <li>Blood donation takes just 10-15 minutes, but it can give someone a lifetime.</li>
-                <li>Every two seconds, someone in the world needs blood.</li>
-                <li>There is no substitute for human blood—donating is the only way to help.</li>
-                <li>Regular donors are key to ensuring blood is always available.</li>
-              </ul>
-            </>
-          }
-        />
-
-        {/* <DropdownCard
-        title="How You Can Help"
-        content={
-          <>
-            <h3>How You Can Help</h3>
-            <p>Ready to make a difference? Become a regular blood donor today. Share your blood group and location to help us reach you whenever there’s a need.</p>
-            <button onClick={() => navigate("/donateBlood")}>Donate Blood</button>
-          </>
-        }
-      /> */}
-      </div>
-      <button onClick={() => { localStorage.clear(); setToken("") }}>Log Out</button>
     </div>
   );
 };
