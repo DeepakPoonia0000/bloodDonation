@@ -12,6 +12,8 @@ import AdminPanel from './components/AdminPanel';
 import AdminLogSign from './components/AdminLogSign';
 import UserDetails from './components/UserDetails';
 import DonorResponseAdmin from './components/DonorResponseAdmin';
+import HospitalLoginForm from './components/HospitalLogin';
+import HospitalSignupForm from './components/HospitalSignup';
 
 function App() {
 

@@ -17,7 +17,7 @@ const compatibility = {
     'o+': ['o+', 'a+', 'b+', 'ab+'],
     'o-': ['o+', 'o-', 'a+', 'a-', 'b+', 'b-', 'ab+', 'ab-'],
     'hh (bombay blood group)': ['hh (bombay blood group)'],
-    'inra': ['inra'] // Add compatibility rules for INRA
+    'inra': ['inra']
 };
 
 const DonationDetails = ({ setToken }) => {

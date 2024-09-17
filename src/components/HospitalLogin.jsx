@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const LoginForm = () => {
+const HospitalLoginForm = () => {
     const [formData, setFormData] = useState({
         contact: {
             phone: '',
@@ -54,4 +54,4 @@ const LoginForm = () => {
     );
 };
 
-export default LoginForm;
+export default HospitalLoginForm;

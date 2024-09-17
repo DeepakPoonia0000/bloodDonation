@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const SignupForm = () => {
+const HospitalSignupForm = () => {
     const [formData, setFormData] = useState({
         name: '',
         address: {
@@ -19,7 +19,6 @@ const SignupForm = () => {
             longitude: ''
         },
         hasBloodDonationCenter: false,
-        bloodTypes: [],
         operatingHours: {
             monday: '',
             tuesday: '',
@@ -110,4 +109,4 @@ const SignupForm = () => {
     );
 };
 
-export default SignupForm;
+export default HospitalSignupForm;
